@@ -5,8 +5,16 @@
  */
 package observerpattern.observers;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import javax.swing.JFrame;
 import observerpattern.interfaces.Observer;
 import observerpattern.observable.Blog;
 
@@ -16,13 +24,12 @@ import observerpattern.observable.Blog;
  */
 public class ObserverWindow extends javax.swing.JFrame implements Observer {
 
-    Blog blog;/**
-             * Creates new form ObserverWindow
-             */
+    Blog blog;
 
     public ObserverWindow(Blog blog) {
         initComponents();
-        this.blog=blog;
+        edit();
+        this.blog = blog;
     }
 
     /**
@@ -34,38 +41,63 @@ public class ObserverWindow extends javax.swing.JFrame implements Observer {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Alerta");
+        setAlwaysOnTop(true);
+        setBackground(new java.awt.Color(46, 46, 46));
+        setBounds(new java.awt.Rectangle(0, 0, 0, 0));
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        setUndecorated(true);
+        setResizable(false);
+        setType(java.awt.Window.Type.POPUP);
+
+        jPanel1.setBackground(new java.awt.Color(46, 46, 46));
+        jPanel1.setForeground(new java.awt.Color(46, 46, 46));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(73, 149, 209));
         jLabel1.setText("Se ha publicado un nuevo articulo: ");
 
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("articulo");
+        jLabel3.setForeground(new java.awt.Color(73, 149, 209));
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("jLabel3");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(133, 133, 133)
+                .addComponent(jLabel1)
+                .addContainerGap(138, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(81, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(78, 78, 78))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
-                .addContainerGap(38, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -74,18 +106,36 @@ public class ObserverWindow extends javax.swing.JFrame implements Observer {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void update() {
-        try {
-            this.setVisible(true);
-            jLabel2.setText(blog.getLastArticle());
-            Thread.sleep(5000);
-            this.setVisible(false);
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex.toString());
-        }
+        final JFrame jframe=this;
+        this.setVisible(true);
+        jLabel3.setText(blog.getLastArticle());
+        
+        ScheduledExecutorService s = Executors.newSingleThreadScheduledExecutor();
+        s.schedule(new Runnable() {
+            public void run() {
+                jframe.setVisible(false);
+            }
+        }, 5, TimeUnit.SECONDS);
+
     }
+
+    public void hideFrame() {
+        this.setVisible(false);
+    }
+
+    public void edit() {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
+        Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
+        int x = (int) rect.getMaxX() - this.getWidth() - 5;
+        int y = (int) rect.getMaxY() - this.getHeight() - 50;
+        this.setLocation(x, y);
+    }
+
 }
