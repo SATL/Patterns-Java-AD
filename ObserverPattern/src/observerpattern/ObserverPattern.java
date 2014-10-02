@@ -5,12 +5,6 @@
  */
 package observerpattern;
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
 import observerpattern.observable.Blog;
 import observerpattern.observers.ObserverConsole;
 import observerpattern.observers.ObserverWindow;
